@@ -67,7 +67,7 @@ def get_all() :
 
 
 @app.get("/{id}")
-def get_(id: int) :
+def get_id(id: int) :
     
     target = df[df["id"] == id].to_dict(orient = 'records')
     result = json.dumps(target, ensure_ascii = False).encode('utf8')

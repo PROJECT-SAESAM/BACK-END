@@ -66,6 +66,16 @@ def get_all() :
 
 
 
+@app.get("/{id}")
+def get_local(id: int) :
+    
+    target = df[df["id"] == id].to_dict(orient = 'records')
+    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    
+    return result
+
+
+
 @app.get("/{local}")
 def get_local(local: str) :
 

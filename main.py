@@ -66,7 +66,7 @@ def get_all() :
 
 
 
-@app.get("/{id}")
+@app.get("/items/{id}")
 def get_id(id: int) :
     
     target = df[df["id"] == id].to_dict(orient = 'records')

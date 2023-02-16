@@ -42,6 +42,7 @@ def func_dbdownload(table_name, schema) :
         con = engine(schema), 
         index_col = "index"
         )
+    # engine(schema).dispose()
     return df
 
 
@@ -55,3 +56,4 @@ def func_dbupload(df, table_name, schema) :
     chunksize = None, 
     dtype = None
     )
+    # engine(schema).dispose()

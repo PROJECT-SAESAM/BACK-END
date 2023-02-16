@@ -59,6 +59,14 @@ def get_id(id: int) :
     target0 = target_df0.to_dict(orient = 'records')
 
     target_df1 = recommend_df[recommend_df['id'] == id].iloc[:, 1:].reset_index(drop = True)
+    
+    if target_df1["kind_big"] == "맛집" :
+        target_df1 = target_df1.rename(columns = config.recommendtextconfig.rest.value)
+    elif target_df1["kind_big"] == "카페" :
+        target_df1 = target_df1.rename(columns = config.recommendtextconfig.cafe.value)
+    elif target_df1["kind_big"] == "술집" :
+        target_df1 = target_df1.rename(columns = config.recommendtextconfig.drink.value)
+
     target1 = target_df1.to_dict(orient = 'records')
 
     target = target0 + target1

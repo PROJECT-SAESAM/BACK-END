@@ -1,5 +1,6 @@
 from common import config
 from MyBackendPackage import assembling, recommending, dbaccessing
+from MyBackendPackage.jsonerror import NpEncoder
 from dummy import dummy
 import numpy as np
 import pandas as pd
@@ -34,20 +35,21 @@ def get_all() :
     target_df = df.iloc[:45, :].reset_index(drop = True)
 
     target = target_df.to_dict(orient = 'records')
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
 
 @app.get("/items/{id}")
 def get_id(id: int) :
-    target_df = df[df["id"] == id].reset_index(drop = True)
+    target_df0 = df[df["id"] == id].reset_index(drop = True)
+    target0 = target_df0.to_dict(orient = 'records')
 
-    recommend = recommend_df[recommend_df['id'] == id].iloc[:, 1:].reset_index(drop = True).to_dict(orient = 'records')
+    target_df1 = recommend_df[recommend_df['id'] == id].iloc[:, 1:].reset_index(drop = True)
+    target1 = target_df1.to_dict(orient = 'records')
 
-    target = target_df.to_dict(orient = 'records')
-    target.update(recommend)
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    target = target0 + target1
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
@@ -57,7 +59,7 @@ def get_local(local: str) :
     target_df = df[df["local"] == local].iloc[:45, :].reset_index(drop = True)
     
     target = target_df.to_dict(orient = 'records')
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
@@ -72,7 +74,7 @@ def get_kind(local: str, kindcondition: str) :
     target_df = df[(df["local"] == local) & (df["kind_big"].isin(kind_condition))].reset_index(drop = True)
     
     target = target_df.to_dict(orient = 'records')
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
@@ -91,7 +93,7 @@ def get_subway(local: str, kindcondition: str, subwaycondition: str) :
     target_df = df[(df["local"] == local) & (df["kind_big"].isin(kind_condition)) & (df["subway"].isin(subway_condition))].reset_index(drop = True)
     
     target = target_df.to_dict(orient = 'records')
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
@@ -114,7 +116,7 @@ def get_dist(local: str, kindcondition: str, subwaycondition: str, walkcondition
     target_df = df[(df["local"] == local) & (df["kind_big"].isin(kind_condition)) & (df["subway"].isin(subway_condition)) & (df["walk"].isin(walk_condition))].reset_index(drop = True)
     
     target = target_df.to_dict(orient= 'records')
-    result = json.dumps(target, ensure_ascii = False).encode('utf8')
+    result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
     return result
 
 
@@ -154,5 +156,5 @@ def get_keyword(local: str, kindcondition: str, subwaycondition: str, walkcondit
     
     finally :
         target = target_df.to_dict(orient= 'records')
-        result = json.dumps(target, ensure_ascii = False).encode('utf8')
+        result = json.dumps(target, ensure_ascii = False, cls = NpEncoder).encode('utf8')
         return result

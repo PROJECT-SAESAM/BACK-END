@@ -12,11 +12,11 @@ charset = secret.dbconfig.charset.value
 
 
 def engine(schema) :
-    return create_engine(f'mysql+pymysql://{user}:{password}@{host}/{schema}')
+    return create_engine(f'mysql+pymysql://{user}:{password}@{host}/{schema}', encoding = charset)
 
 
 def conn(schema) :
-    return create_engine(f'mysql+pymysql://{user}:{password}@{host}/{schema}').connect()
+    return create_engine(f'mysql+pymysql://{user}:{password}@{host}/{schema}', encoding = charset).connect()
 
 
 def func_dbdownload(table_name, schema) :

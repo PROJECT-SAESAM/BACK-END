@@ -9,6 +9,10 @@ from fastapi import FastAPI
 
 
 
+app = FastAPI()
+
+
+
 downloadschema_list = config.schemaconfig.downloadschemaname.value
 parse_list = config.parseconfig.parselist.value
 keyword_list = config.analyticsconfig.keywordlist.value
@@ -23,10 +27,6 @@ naver = dbaccessing.func_dbdownload(keyword_list[1], downloadschema_list[1])
 
 df = assembling.assemble_func(info, kind, dist, menu, review, saesam, naver)
 recommend_df = dummy.dummy_func()
-
-
-
-app = FastAPI()
 
 
 

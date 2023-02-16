@@ -13,5 +13,5 @@ class parseconfig(Enum) :
 
 
 class analyticsconfig(Enum) :
-    keywordlist = ["naverkeyword", "saesamkeyword"]
+    keywordlist = ["saesamkeyword", "naverkeyword"]
     recommendlist = []

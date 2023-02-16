@@ -1,6 +1,6 @@
 from common import config
-from MyBackendPackage import assembling
-from MyBackendPackage import dbaccessing
+from MyBackendPackage import assembling, recommending, dbaccessing
+from dummy import dummy
 import numpy as np
 import pandas as pd
 import json
@@ -11,67 +11,21 @@ from fastapi import FastAPI
 downloadschema_list = config.schemaconfig.downloadschemaname.value
 parse_list = config.parseconfig.parselist.value
 keyword_list = config.analyticsconfig.keywordlist.value
-recommend_list = config.analyticsconfig.recommendlist.value
 
 info = dbaccessing.func_dbdownload(parse_list[0], downloadschema_list[0])
 kind = dbaccessing.func_dbdownload(parse_list[1], downloadschema_list[0])
 dist = dbaccessing.func_dbdownload(parse_list[2], downloadschema_list[0])
 menu = dbaccessing.func_dbdownload(parse_list[3], downloadschema_list[0])
 review = dbaccessing.func_dbdownload(parse_list[4], downloadschema_list[0])
+saesam = dbaccessing.func_dbdownload(keyword_list[0], downloadschema_list[1])
+naver = dbaccessing.func_dbdownload(keyword_list[1], downloadschema_list[1])
 
-naver = dbaccessing.func_dbdownload(keyword_list[0], downloadschema_list[1])
-saesam = dbaccessing.func_dbdownload(keyword_list[1], downloadschema_list[1])
+df = assembling.assemble_func(info, kind, dist, menu, review, saesam, naver)
+recommend_df = dummy.dummy_func()
 
 
 
 app = FastAPI()
-
-
-
-info = pd.read_csv(f"./data/info.csv", encoding = "utf-8", index_col = 0)
-kind = pd.read_csv(f"./data//kind.csv", encoding = "utf-8", index_col = 0)
-dist = pd.read_csv(f"./data/dist.csv", encoding = "utf-8", index_col = 0)
-menu = pd.read_csv(f"./data/menu.csv", encoding = "utf-8", index_col = 0)
-review = pd.read_csv(f"./data/review.csv", encoding = "utf-8", index_col = 0)
-naver = pd.read_csv(f"./data/naverkeyword.csv", encoding = "utf-8", index_col = 0)
-saesam = pd.read_csv(f"./data/saesamkeyword.csv", encoding = "utf-8", index_col = 0)
-
-
-
-df = pd.concat([info, kind.iloc[:, 1:], dist.iloc[:, 1:]], axis = 1)
-
-id_list = list(df["id"].unique())
-
-xs = []
-ys = []
-zs = []
-ks = []
-
-for i in range(len(id_list)) :
-    x_df = menu[menu["id"] == id_list[i]]
-    x = list(zip(x_df["menu_name"], x_df["menu_price"]))
-    xs.append(x)
-
-for i in range(len(id_list)) :
-    y_df = review[review["id"] == id_list[i]]
-    y = list(zip(y_df["review_keyword"], y_df["review_num"]))
-    ys.append(y)
-
-for i in range(len(id_list)) :
-    z_df = naver[naver["id"] == id_list[i]]
-    z = list(z_df["naverkeyword"])
-    zs.append(z)
-
-for i in range(len(id_list)) :
-    k_df = saesam[saesam["id"] == id_list[i]]
-    k = list(k_df["naverkeyword"])
-    ks.append(k)
-
-df["menu"] = xs
-df["review"] = ys
-df["naver"] = zs
-df['saesam'] = ks
-
 
 
 
@@ -88,8 +42,11 @@ def get_all() :
 @app.get("/items/{id}")
 def get_id(id: int) :
     target_df = df[df["id"] == id].reset_index(drop = True)
-    
+
+    recommend = recommend_df[recommend_df['id'] == id].iloc[:, 1:].reset_index(drop = True).to_dict(orient = 'records')
+
     target = target_df.to_dict(orient = 'records')
+    target.update(recommend)
     result = json.dumps(target, ensure_ascii = False).encode('utf8')
     return result
 
